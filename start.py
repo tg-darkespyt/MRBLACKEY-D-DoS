@@ -6,7 +6,7 @@ import os
 from keep_alive import keep_alive
 
 keep_alive()
-bot = telebot.TeleBot('7345507165:AAErAcMHA6iT02v6QedQQC-fDcWEXkjKxYw')
+bot = telebot.TeleBot('7476318571:AAGj2iJy6zavdPPLO-sGojkwrqq2rBSpClA')
 USER_FILE = "users.txt"
 ADMIN_FILE = "admins.txt"
 LOG_FILE = "log.txt"
