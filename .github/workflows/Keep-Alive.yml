@@ -43,9 +43,9 @@ jobs:
     - name: Run Bot Script in Codespace by @DARKESPYT
       env:
         CODESPACE: jubilant-system-7v9w67g96rq7cr46j
-        SCRIPT_PATH: /workspaces/MRBLACKEY-D-DoS/start.py
+        SCRIPT_PATH: start.py
       run: |
         gh codespace ssh --codespace "jubilant-system-7v9w67g96rq7cr46j"
-        pwd
+        ls
         python3 ${SCRIPT_PATH}
 
