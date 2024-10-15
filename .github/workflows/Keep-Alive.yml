@@ -46,6 +46,7 @@ jobs:
         SCRIPT_PATH: start.py
       run: |
         gh codespace ssh --codespace "jubilant-system-7v9w67g96rq7cr46j"
-        pip install telebot flask schedule
+        source venv/bin/activate
+        pip3 install telebot flask schedule
         python3 ${SCRIPT_PATH}
 
