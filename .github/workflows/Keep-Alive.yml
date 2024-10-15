@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+  schedule:
+    - cron: '* * * * *'
 
 jobs:
   run-codespace:
@@ -16,7 +18,7 @@ jobs:
 
     - name: Install Required Packages and Libraries by @DARKESPYT
       run: |
-        sudo apt update && sudo apt install -y python3-pip nano && pip3 install telebot flask schedule
+        sudo apt update && sudo apt install -y python3 nano && pip3 install telebot flask schedule
 
     - name: LOGIN INTO GH CLI by @DARKESPYT
       run: |
