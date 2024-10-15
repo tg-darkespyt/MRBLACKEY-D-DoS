@@ -46,5 +46,6 @@ jobs:
         SCRIPT_PATH: /workspaces/MRBLACKEY-D-DoS/start.py
       run: |
         gh codespace ssh --codespace "jubilant-system-7v9w67g96rq7cr46j"
+        pwd
         python3 ${SCRIPT_PATH}
 
