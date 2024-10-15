@@ -18,7 +18,7 @@ jobs:
 
     - name: Install Required Packages and Libraries by @DARKESPYT
       run: |
-        sudo apt update && sudo apt install -y python3-xyz python3-full nano && pip3 install telebot flask schedule
+        sudo apt update && sudo apt upgrade && sudo apt install -y python3-full nano && pip3 install telebot flask schedule
 
     - name: LOGIN INTO GH CLI by @DARKESPYT
       run: |
