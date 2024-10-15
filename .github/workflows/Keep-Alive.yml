@@ -45,5 +45,5 @@ jobs:
         CODESPACE: jubilant-system-7v9w67g96rq7cr46j
         SCRIPT_PATH: /workspaces/MRBLACKEY-D-DoS/start.py
       run: |
-        gh codespace ssh -c "${{ env.CODESPACE }}" -- bash -c ". /workspaces/MRBLACKEY-D-DoS/venv/bin/activate && python3 ${SCRIPT_PATH}"
+        gh codespace ssh -c "jubilant-system-7v9w67g96rq7cr46j" -- bash -c "/workspaces/MRBLACKEY-D-DoS/venv/bin/python ${SCRIPT_PATH}"
 
