@@ -45,5 +45,5 @@ jobs:
         CODESPACE: jubilant-system-7v9w67g96rq7cr46j
         SCRIPT_PATH: /workspaces/MRBLACKEY-D-DoS/start.py
       run: |
-        gh codespace ssh -c "jubilant-system-7v9w67g96rq7cr46j" -- bash -l -c "source /workspaces/MRBLACKEY-D-DoS/venv/bin/activate && echo 'Virtual environment activated. Wait 3 seconds...' && sleep 3 && python3 ${SCRIPT_PATH}"
+        gh codespace ssh -c "jubilant-system-7v9w67g96rq7cr46j" -- bash -c '/workspaces/MRBLACKEY-D-DoS/venv/bin/python3 -c "import sys; print(f\'Python interpreter activated in virtual environment: {sys.executable}\')" && echo "Wait 3 seconds..." && sleep 3 && /workspaces/MRBLACKEY-D-DoS/venv/bin/python3 ${SCRIPT_PATH}'
 
