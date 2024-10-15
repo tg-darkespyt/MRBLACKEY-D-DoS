@@ -1,0 +1,52 @@
+name: Keep Codespace Alive for 24*7 by @DARKESPYT
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 */6 * * *'
+
+jobs:
+  run-codespace:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Action Checkout code by @DARKESPYT
+      uses: actions/checkout@v3
+
+    - name: Install Required Packages and Libraries by @DARKESPYT
+      run: |
+        sudo apt update && sudo apt install -y python3-venv && python3 -m venv venv && source venv/bin/activate && pip install --upgrade pip && pip install telebot flask schedule
+
+    - name: LOGIN INTO GH CLI by @DARKESPYT
+      run: |
+        echo "${{ secrets.GH_TOKEN }}" | gh auth login --with-token
+        gh auth status
+
+    - name: Starting Codespace by @DARKESPYT
+      env:
+        CODESPACE: jubilant-system-7v9w67g96rq7cr46j
+      run: |
+        STATUS=$(gh codespace list --json name,state --jq '.[] | select(.name == "${{ env.CODESPACE }}") | .state')
+        if [ "$STATUS" == "Shutdown" ]; then
+          gh codespace ssh --codespace $CODESPACE
+        fi
+        while true; do
+          STATUS=$(gh codespace list --json name,state --jq '.[] | select(.name == "${{ env.CODESPACE }}") | .state')
+          if [ "$STATUS" == "Available" ]; then
+            break
+          fi
+        done
+      
+    - name: Run Bot Script in Codespace by @DARKESPYT
+      env:
+        CODESPACE: jubilant-system-7v9w67g96rq7cr46j
+        SCRIPT_PATH: start.py
+      run: |
+        gh codespace ssh --codespace "jubilant-system-7v9w67g96rq7cr46j"
+        source venv/bin/activate
+        pip3 install telebot flask schedule
+        python3 ${SCRIPT_PATH}
+
