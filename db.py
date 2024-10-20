@@ -1,5 +1,4 @@
 import sqlite3
-import os
 
 default_admins = [
     (1, '1027596128', 1)
