@@ -12,8 +12,9 @@ channel_username = '@MR_BLACKEY_HACKS'
 
 def initialize_db():
     conn = sqlite3.connect('bot_data.db')
+    conn.execute('PRAGMA journal_mode=WAL;')
     cursor = conn.cursor()
-
+    cursor.execute("BEGIN IMMEDIATE")
     # Create table for bot configurations
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS bot_configs (
