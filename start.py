@@ -11,7 +11,8 @@ import tempfile
 
 DB_FILE = 'bot_data.db'
 keep_alive()
-initialize_db()
+if not os.path.exists(DB_FILE):
+    initialize_db()
 
 def db_connection():
     conn = sqlite3.connect(DB_FILE)
