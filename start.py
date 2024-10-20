@@ -15,6 +15,9 @@ initialize_db()
 
 def db_connection():
     conn = sqlite3.connect(DB_FILE)
+    conn.execute('PRAGMA journal_mode=WAL;')
+    cursor = conn.cursor()
+    cursor.execute("BEGIN IMMEDIATE")
     return conn
 
 def read_users(bot_id):
