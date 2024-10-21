@@ -38,6 +38,7 @@ jobs:
         else
           echo "No bot_data.db found in the repository."
           echo "db_exists=false" >> $GITHUB_ENV
+        fi
 
     - name: Pull Latest Data Before Starting Bot
       if: env.db_exists == 'true'
