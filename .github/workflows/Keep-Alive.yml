@@ -6,7 +6,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '* * * * *'
+    - cron: '0 */6 * * *'
 
 jobs:
   run-codespace:
@@ -40,7 +40,7 @@ jobs:
           fi
         done
 
-    - name: Check if bot_data.db Exists in the Repo
+    - name: Checking for the Database in Repository
       id: check-db
       run: |
         if [ -f bot_data.db ]; then
@@ -53,7 +53,7 @@ jobs:
           echo "No bot_data.db found in the repository."
         fi
 
-    - name: Pull Latest Data Before Starting Bot
+    - name: Pull Latest Database
       run: |
         git pull origin main
         
@@ -67,7 +67,7 @@ jobs:
         pip3 install telebot flask schedule
         python3 ${SCRIPT_PATH}
 
-    - name: Backup bot_data.db After 5h 45m
+    - name: Backup the database
       run: |
         git config --global user.name "tg-darkespyt"
         git config --global user.email "darkespyt8577@gmail.com"
@@ -76,8 +76,7 @@ jobs:
         git commit -m "Automated backup of bot_data.db"
         git push
 
-    - name: Pull Latest Bot Data on Restart
-      if: github.event_name == 'schedule'
+    - name: Pull Latest Bot Database
       run: |
         git pull origin main
         
