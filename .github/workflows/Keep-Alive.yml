@@ -78,19 +78,6 @@ jobs:
           fi
         done
 
-    - name: Checking for the Database in Repository
-      id: check-db
-      run: |
-        if [ -f bot_data.db ]; then
-          if [ ! -s bot_data.db ]; then
-            echo "Bot data file is empty in the repository."
-          else
-            echo "Bot Data found."
-          fi
-        else
-          echo "No bot_data.db found in the repository."
-        fi
-
     - name: Pull Latest Database
       run: |
         git pull origin main
@@ -100,8 +87,11 @@ jobs:
         git config --global user.name "tg-darkespyt"
         git config --global user.email "darkespyt8577@gmail.com"
         git pull origin main
-        git add bot_data.db
-        git commit -m "Automated backup of bot_data.db"
-        git push origin main
-        git pull origin main
+        sleep 60
+        if [ -f bot_data.db ]; then
+            git add bot_data.db
+            git commit -m "Automated backup of bot_data.db"
+            git push origin main
+            git pull origin main
+        fi
         
