@@ -46,17 +46,14 @@ jobs:
         if [ -f bot_data.db ]; then
           if [ ! -s bot_data.db ]; then
             echo "Bot data file is empty in the repository."
-            echo "db_exists=false" >> $GITHUB_ENV
           else
-            echo "db_exists=true" >> $GITHUB_ENV
+            echo "Bot Data found."
           fi
         else
           echo "No bot_data.db found in the repository."
-          echo "db_exists=false" >> $GITHUB_ENV
         fi
 
     - name: Pull Latest Data Before Starting Bot
-      if: env.db_exists == 'true'
       run: |
         git pull origin main
         
@@ -80,7 +77,7 @@ jobs:
         git push
 
     - name: Pull Latest Bot Data on Restart
-      if: github.event_name == 'schedule' && env.db_exists == 'true'
+      if: github.event_name == 'schedule'
       run: |
         git pull origin main
         
