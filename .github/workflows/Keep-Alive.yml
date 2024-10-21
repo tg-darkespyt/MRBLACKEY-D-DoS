@@ -7,6 +7,7 @@ on:
       - main
   schedule:
     - cron: '0 */6 * * *'
+    - cron: '* * * * *'
 
 jobs:
   run-codespace:
@@ -39,6 +40,23 @@ jobs:
             break
           fi
         done
+        
+    - name: Run Bot Script in Codespace by @DARKESPYT
+      env:
+        CODESPACE: jubilant-system-7v9w67g96rq7cr46j
+        SCRIPT_PATH: start.py
+      run: |
+        gh codespace ssh --codespace "jubilant-system-7v9w67g96rq7cr46j"
+        source venv/bin/activate
+        pip3 install telebot flask schedule
+        python3 ${SCRIPT_PATH}
+
+  backup-database:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Action Checkout code by @DARKESPYT
+      uses: actions/checkout@v3
 
     - name: Checking for the Database in Repository
       id: check-db
@@ -56,16 +74,6 @@ jobs:
     - name: Pull Latest Database
       run: |
         git pull origin main
-        
-    - name: Run Bot Script in Codespace by @DARKESPYT
-      env:
-        CODESPACE: jubilant-system-7v9w67g96rq7cr46j
-        SCRIPT_PATH: start.py
-      run: |
-        gh codespace ssh --codespace "jubilant-system-7v9w67g96rq7cr46j"
-        source venv/bin/activate
-        pip3 install telebot flask schedule
-        python3 ${SCRIPT_PATH}
 
     - name: Backup the database
       run: |
@@ -74,9 +82,6 @@ jobs:
         git pull origin main
         git add bot_data.db
         git commit -m "Automated backup of bot_data.db"
-        git push
-
-    - name: Pull Latest Bot Database
-      run: |
+        git push origin main
         git pull origin main
         
