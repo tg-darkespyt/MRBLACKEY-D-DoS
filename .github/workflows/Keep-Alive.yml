@@ -46,19 +46,23 @@ jobs:
         SCRIPT_PATH: start.py
       run: |
         gh codespace ssh --codespace "jubilant-system-7v9w67g96rq7cr46j"
-        tmux new-session -d -s bot 'source venv/bin/activate && pip3 install telebot flask schedule && python3 ${SCRIPT_PATH}'
+        tmux new-session -d -s bot 'git pull origin main && source venv/bin/activate && pip3 install telebot flask schedule && python3 ${SCRIPT_PATH}'
         while true; do
             git config --global user.name "tg-darkespyt"
             git config --global user.email "darkespyt8577@gmail.com"
             git pull origin main
-          if [ -f bot_data.db ]; then
-            git add .
-            git commit -m "Automated backup of bot_data.db."
-            git push
-            echo "Bot Database Backed up, check the repository."
-          else
-            echo "Failed to take backup the Bot Database."
-          fi
-          sleep 60
-        done
+            if [ -f bot_data.db ]; then
+              git add .
+              if ! git diff --cached --quiet; then
+                git commit -m "Automated backup of bot_data.db."
+                git push origin main
+                echo "Bot Database Backed up, check the repository."
+              else
+                echo "No changes to commit."
+              fi
+            else
+              echo "Failed to take backup of the Bot Database."
+            fi
+            sleep 60
+          done
       
