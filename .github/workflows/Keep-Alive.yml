@@ -25,6 +25,15 @@ jobs:
         echo "${{ secrets.GH_TOKEN }}" | gh auth login --with-token
         gh auth status
 
+    - name: Adding SSH Access by @DARKESPYT
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.GH_SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
+        git remote set-url origin git@github.com:tg-darkespyt/MRBLACKEY-D-DoS.git
+        
+
     - name: Starting Codespace by @DARKESPYT
       env:
         CODESPACE: jubilant-system-7v9w67g96rq7cr46j
