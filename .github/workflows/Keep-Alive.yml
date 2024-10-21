@@ -6,7 +6,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: '* * * * *'
 
 jobs:
   run-codespace:
@@ -72,15 +72,15 @@ jobs:
 
     - name: Backup bot_data.db After 5h 45m
       run: |
-        sleep 20700
         git config --global user.name "tg-darkespyt"
         git config --global user.email "darkespyt8577@gmail.com"
+        git pull origin main
         git add bot_data.db
         git commit -m "Automated backup of bot_data.db"
-        git pull
         git push
 
     - name: Pull Latest Bot Data on Restart
       if: github.event_name == 'schedule' && env.db_exists == 'true'
       run: |
-        git pull
+        git pull origin main
+        
