@@ -7,10 +7,9 @@ on:
       - main
   schedule:
     - cron: '0 */6 * * *'
-    - cron: '* * * * *'
 
 jobs:
-  run-codespace:
+  run-codespace-by-DARKESPYT:
     runs-on: ubuntu-latest
 
     steps:
@@ -47,51 +46,19 @@ jobs:
         SCRIPT_PATH: start.py
       run: |
         gh codespace ssh --codespace "jubilant-system-7v9w67g96rq7cr46j"
-        source venv/bin/activate
-        pip3 install telebot flask schedule
-        python3 ${SCRIPT_PATH}
-
-  backup-database:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Action Checkout code by @DARKESPYT
-      uses: actions/checkout@v3
-
-    - name: LOGIN INTO GH CLI by @DARKESPYT
-      run: |
-        echo "${{ secrets.GH_TOKEN }}" | gh auth login --with-token
-        gh auth status
-
-    - name: Starting Codespace by @DARKESPYT
-      env:
-        CODESPACE: jubilant-system-7v9w67g96rq7cr46j
-      run: |
-        STATUS=$(gh codespace list --json name,state --jq '.[] | select(.name == "${{ env.CODESPACE }}") | .state')
-        if [ "$STATUS" == "Shutdown" ]; then
-          gh codespace ssh --codespace $CODESPACE
-        fi
+        tmux new-session -d -s bot 'source venv/bin/activate && pip3 install telebot flask schedule && python3 ${SCRIPT_PATH}'
         while true; do
-          STATUS=$(gh codespace list --json name,state --jq '.[] | select(.name == "${{ env.CODESPACE }}") | .state')
-          if [ "$STATUS" == "Available" ]; then
-            break
-          fi
-        done
-
-    - name: Pull Latest Database
-      run: |
-        git pull origin main
-
-    - name: Backup the database
-      run: |
-        git config --global user.name "tg-darkespyt"
-        git config --global user.email "darkespyt8577@gmail.com"
-        git pull origin main
-        sleep 60
-        if [ -f bot_data.db ]; then
-            git add bot_data.db
-            git commit -m "Automated backup of bot_data.db"
-            git push origin main
+            git config --global user.name "tg-darkespyt"
+            git config --global user.email "darkespyt8577@gmail.com"
             git pull origin main
-        fi
-        
+          if [ -f bot_data.db ]; then
+            git add .
+            git commit -m "Automated backup of bot_data.db."
+            git push
+            echo "Bot Database Backed up, check the repository."
+          else
+            echo "Failed to take backup the Bot Database."
+          fi
+          sleep 60
+        done
+      
