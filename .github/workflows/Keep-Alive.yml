@@ -25,6 +25,25 @@ jobs:
         echo "${{ secrets.GH_TOKEN }}" | gh auth login --with-token
         gh auth status
 
+    - name: Check if bot_data.db Exists in the Repo
+      id: check-db
+      run: |
+        if [ -f bot_data.db ]; then
+          if [ ! -s bot_data.db ]; then
+            echo "Bot data file is empty in the repository."
+            echo "db_exists=false" >> $GITHUB_ENV
+          else
+            echo "db_exists=true" >> $GITHUB_ENV
+          fi
+        else
+          echo "No bot_data.db found in the repository."
+          echo "db_exists=false" >> $GITHUB_ENV
+
+    - name: Pull Latest Data Before Starting Bot
+      if: env.db_exists == 'true'
+      run: |
+        git pull
+
     - name: Starting Codespace by @DARKESPYT
       env:
         CODESPACE: jubilant-system-7v9w67g96rq7cr46j
@@ -50,3 +69,17 @@ jobs:
         pip3 install telebot flask schedule
         python3 ${SCRIPT_PATH}
 
+    - name: Backup bot_data.db After 5h 45m
+      run: |
+        sleep 20700
+        git config --global user.name "tg-darkespyt"
+        git config --global user.email "darkespyt8577@gmail.com"
+        git add bot_data.db
+        git commit -m "Automated backup of bot_data.db"
+        git pull
+        git push
+
+    - name: Pull Latest Bot Data on Restart
+      if: github.event_name == 'schedule' && env.db_exists == 'true'
+      run: |
+        git pull
