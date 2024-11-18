@@ -1,4 +1,5 @@
 import telebot
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import subprocess
 from datetime import datetime, timedelta
 import time
@@ -425,7 +426,8 @@ def initialize_bot(bot, bot_id):
                     response = "Error: Time interval must be less than 240."
                 else:
                     log_command(user_id, target, port, time, '/bgmi')
-                    start_attack_reply(message, target, port, time)  
+                    start_attack_reply(message, target, port, time, owner_name)
+                    return
             else:
                 response = "✅ Usage :- /bgmi <target> <port> <time>"  # Updated command syntax
         else:
